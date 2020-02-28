@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2baf53030be3e45aa29602029a0bf6, type: 3}
+  m_Name: Composite Shape Factory
+  m_EditorClassIdentifier: 
+  poolScene:
+    m_Handle: -59190
+  recycle: 1
+  prefabs:
+  - {fileID: -9168552056829478973, guid: 98ac69d1be0e7fe45a95acb2397d62fc, type: 3}
+  - {fileID: 4299648353552830136, guid: d0a235b6a8ba3b544b3886df962e78f9, type: 3}
+  - {fileID: 1330582704769147663, guid: 2b325dfb15054e945bba2f34a1bc4e35, type: 3}
+  materials:
+  - {fileID: 2100000, guid: 9deabc62bc17f4f4182a697bfedcc6ba, type: 2}
+  - {fileID: 2100000, guid: cd860f994722d4e40a76e34446b713dc, type: 2}
+  - {fileID: 2100000, guid: 474172889ba032d4cb555c63f5398a40, type: 2}
