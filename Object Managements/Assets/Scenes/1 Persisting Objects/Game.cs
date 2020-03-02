@@ -64,7 +64,9 @@ public class Game : PersistableObject {
     //版本号升级为4, 实现了保存形状的转动角速度
     //const int saveVersion = 4;
     //版本号升级为5, 实现了分别保存复合形状中每一个形状的颜色
-    const int saveVersion = 5;
+    //const int saveVersion = 5;
+    //版本号6实现了保存形状所带有的行为脚本的状态数据
+    const int saveVersion = 6;
 
     //用来获取PersistentStorage实例的字段
     //public
@@ -117,7 +119,6 @@ public class Game : PersistableObject {
         //多种情况都可能导致OnEnable方法被触发, 因此先检查工厂Id是否已经赋值过了, 
         //如果是, 则不需要重复赋值
         if (shapeFactories[0].FactoryId != 0) {
-            Debug.Log("OnEnable开始了");
             //脚本启用时, 使用数组索引为每个工厂设置其工厂Id
             for (int i = 0; i < shapeFactories.Length; i++) {
                 shapeFactories[i].FactoryId = i;

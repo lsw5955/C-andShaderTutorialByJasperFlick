@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+//List类位于该命名空间下
+using System.Collections.Generic;
 
 public class Shape : PersistableObject {
     //默认属性写法
@@ -44,11 +46,11 @@ public class Shape : PersistableObject {
         }
     }
 
-    //获取旋转角速度的属性
-    public Vector3 AngularVelocity { get; set; }
-
-    //获得形状的移动速度
-    public Vector3 Velocity { get; set; }
+    //版本6开始这两个速度值的功能被行为脚本代替
+    ////获取旋转角速度的属性
+    //public Vector3 AngularVelocity { get; set; }
+    ////获得形状的移动速度
+    //public Vector3 Velocity { get; set; }
 
     [SerializeField]
     //存储脚本要操作的所有MeshRenderer组件的引用
@@ -81,9 +83,37 @@ public class Shape : PersistableObject {
     //存储生产该形状的工厂引用
     ShapeFactory originFactory;
 
+    //用于存储该形状的行为组件引用
+    List<ShapeBehavior> behaviorList = new List<ShapeBehavior>();
+
+    //可公开访问, 不可公开设置的形状年龄属性, 代表了形状被回收前存在的总时间
+    public float Age { get; private set; }
+
+    //由于AddComponent需要的类型并不只有一种, 因此需要将方法变成泛型方法, 调用时指定脚本组件的类型
+    //AddComponent方法的定义约束了泛型必须继承自Component, 
+    //ShapeBehavior继承自MonoBehaviour继承自Behaviour继承自Component
+    //新增约束new(), 在别处调用该泛型方法时, 如果传入的类型不包含无参数构造方法, 则会报错
+    public T AddBehavior<T>() where T : ShapeBehavior, new()
+    {
+        //通过回收池获得行为实例, 而不是每次都新建
+        T behavior = ShapeBehaviorPool<T>.Get();
+        //将参数代表的行为组件引用加入自身的行为组件列表
+        behaviorList.Add(behavior);
+        return behavior;
+    }
+
     //方便形状在销毁时调用自身生产工厂的Reclaim方法
     public void Recycle()
     {
+        //回收形状时将年龄设置为0
+        Age = 0f;
+        //在回收一个形状之前, 先遍历其行为组件脚本列表
+        for (int i = 0; i < behaviorList.Count; i++) {
+            //遍历形状的行为列表, 对每一个行为进行回收
+            behaviorList[i].Recycle();
+        }
+        //清空行为组件列表内的元素
+        behaviorList.Clear();
         OriginFactory.Reclaim(this);
     }
 
@@ -117,7 +147,7 @@ public class Shape : PersistableObject {
             }
         }
     }
-
+    
     //重写PersistableObject类的Load方法
     public override void Load(GameDataReader reader)
     {
@@ -140,10 +170,34 @@ public class Shape : PersistableObject {
             //如果版本号大于0, 则表示是带有颜色数据的新版本, 需要读取颜色数据. 否则, 不读取颜色数据, 使用写死的白色代替
             SetColor(reader.Version > 0 ? reader.ReadColor() : Color.white);
         }
-        //如果版本号大于等于4, 读取数据作为角速度值, 否则固定设置为Vector3.zero
-        AngularVelocity = reader.Version >= 4 ? reader.ReadVector3() : Vector3.zero;
-        //如果版本号大于等于4, 读取数据作为移动速度值, 否则固定设置为Vector3.zero
-        Velocity = reader.Version >= 4 ? reader.ReadVector3() : Vector3.zero;
+        ////如果版本号大于等于4, 读取数据作为角速度值, 否则固定设置为Vector3.zero
+        //AngularVelocity = reader.Version >= 4 ? reader.ReadVector3() : Vector3.zero;
+        ////如果版本号大于等于4, 读取数据作为移动速度值, 否则固定设置为Vector3.zero
+        //Velocity = reader.Version >= 4 ? reader.ReadVector3() : Vector3.zero;
+        //只有版本号大于等于6才代表保存文件包含行为脚本的数据
+        if (reader.Version >= 6) {
+            //读取形状年龄
+            Age = reader.ReadFloat();
+            //读取该形状总共保存了几个行为脚本
+            int behaviorCount = reader.ReadInt();
+            //按照保存的行为脚本数量, 取对应数量的行为代号, 并根据代号为形状添加行为脚本
+            for (int i = 0; i < behaviorCount; i++) {
+                //AddBehavior((ShapeBehaviorType)reader.ReadInt()).Load(reader);
+                //通过ShapeBehaviorType的扩展方法GetInstance获得行为的实例
+                ShapeBehavior behavior = ((ShapeBehaviorType)reader.ReadInt()).GetInstance();
+                //将得到的行为实例加入形状的行为列表
+                behaviorList.Add(behavior);
+                //调用行为的Load方法加载行为的保存数据
+                behavior.Load(reader);
+            }
+        }
+        //如果版本号小于6但是大于等于4, 表示虽然没有行为脚本数据, 却存在旋转和移动速度数据, 需要特别处理
+        else if (reader.Version >= 4) {
+            //根据读取到的旋转速度为形状添加旋转行为脚本
+            AddBehavior<RotationShapeBehavior>().AngularVelocity = reader.ReadVector3();
+            //根据读取到的移动速度为形状添加移动行为脚本
+            AddBehavior<MovementShapeBehavior>().Velocity = reader.ReadVector3();
+        }
     }
 
     //SetColor的另一个版本, 接受两个参数, 
@@ -163,23 +217,13 @@ public class Shape : PersistableObject {
     //形状不再使用FixedUpdate方法更新自身状态, 而是使用自定义的方法, 通过Game脚本统一管理调用时机
     public void GameUpdate()
     {
-        //调用Rotate方法, 形状将使用与参数代表的的欧拉角进行旋转
-        //transform.Rotate(Vector3.forward);
-        //乘以希望的旋转速度值50 , 再乘以FixedUpdate的执行间隔时间, 
-        //这样无论FixedUpdate方法调用的频率是多少, 形状的转动速度都不会受到影响
-        //transform.Rotate(Vector3.forward * 50f * Time.deltaTime);
-        //使用AngularVelocity属性的值来获取随机角速度, 并代替之前设置的固定速度值
-        transform.Rotate(AngularVelocity * Time.deltaTime);
-        //实现形状的移动
-        transform.localPosition += Velocity * Time.deltaTime;
+        //随着每帧时间增加形状年龄
+        Age += Time.deltaTime;
+        //遍历形状的行为脚本数组, 依次调用每一个的GameUpdate方法
+        for (int i = 0; i < behaviorList.Count; i++) {
+            behaviorList[i].GameUpdate(this);
+        }
     }
-
-    //现在MeshRenderer组件将手动指定, 不需要Awake方法去自动获取了
-    //void Awake()
-    //{
-    //    //在Awake方法中获取到MeshRenderer组件实例的引用, 存储到meshRenderer字段中
-    //    meshRenderer = GetComponent<MeshRenderer>();
-    //}
 
     //重写PersistableObject类的Save方法
     public override void Save(GameDataWriter writer)
@@ -194,10 +238,17 @@ public class Shape : PersistableObject {
         for (int i = 0; i < colors.Length; i++) {
             writer.Write(colors[i]);
         }
-        //写入形状的角速度
-        writer.Write(AngularVelocity);
-        //向保存文件写入移动速度 :
-        writer.Write(Velocity);
+        //写入形状年龄
+        writer.Write(Age);
+        //写入该形状总共有多少个行为组件
+        writer.Write(behaviorList.Count);
+        //遍历形状的组件列表
+        for (int i = 0; i < behaviorList.Count; i++) {
+            //以int类型保存每个行为组件的代号枚举
+            writer.Write((int)behaviorList[i].BehaviorType);
+            //调用每个行为组件自己的Save方法
+            behaviorList[i].Save(writer);
+        }
     }
 
     //代表形状的颜色数据的字段

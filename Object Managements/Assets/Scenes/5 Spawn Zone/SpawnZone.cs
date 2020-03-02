@@ -23,6 +23,12 @@ public abstract class SpawnZone : PersistableObject {
     [System.Serializable]
     //用于包含所有与形状配置有关内容的结构
     public struct SpawnConfiguration {
+        //配置该生成区产生形状的震荡方向
+        public MovementDirection oscillationDirection;
+        //配置该生成区产生形状的震荡幅度随机范围
+        public FloatRange oscillationAmplitude;
+        //配置该生成区产生形状的震荡频率随机范围
+        public FloatRange oscillationFrequency;
         //用来为生成区配置要使用的形状工厂
         public ShapeFactory[] factories;
         //控制生成区对形状的配色方式, false表示对构成形状的每个组成部分使用不同颜色
@@ -94,48 +100,72 @@ public abstract class SpawnZone : PersistableObject {
                 shape.SetColor(spawnConfig.color.RandomInRange, i);
             }
         }
-        //AddComponent<脚本类名>()方法会为指定的游戏对象添加指定类型的脚本组件, 并返回该脚本的实例
-        var rotation = shape.gameObject.AddComponent<RotationShapeBehavior>();
-        //shape.AngularVelocity = Random.onUnitSphere * spawnConfig.angularSpeed.RandomValueInRange;
-        //不再使用上面这句代码设置形状自身的角速度, 而是使用行为脚本的角速度控制旋转
-        rotation.AngularVelocity = Random.onUnitSphere * spawnConfig.angularSpeed.RandomValueInRange;
-        //设置形状的移动速度
-        //instance.Velocity = Random.onUnitSphere * Random.Range(0f, 2f);
-        //shape参数取代instance
-        //shape.Velocity = Random.onUnitSphere * Random.Range(0f, 2f);
-        //将形状的运动速度由随机方向改为生成区自身的z轴正方向, 
-        //transform.forwoard代表当前游戏物体本地坐标系下的(0,0,1)向量
-        //shape.Velocity = transform.forward * Random.Range(0f, 2f);
-        //存储得到的速度方向
-        Vector3 direction;
-
-        //switch将会检查每一个case关键字后面的值与其括号内写的值是否相等, 
-        //相等则执行case下的语句, 不相等则继续向下寻找下一个case, 直到遇到相等情况或是switch语句全部执行完毕
-        switch (spawnConfig.movementDirection) {
-            case SpawnConfiguration.MovementDirection.Upward:
-                //如果枚举字段代表向上, 则速度方向为transform.up;
-                direction = transform.up;
-                //该语句用于跳出switch
-                break;
-            case SpawnConfiguration.MovementDirection.Outward:
-                //如果枚举字段代表向外, 则运动方向由生成区中心指向形状当前位置
-                direction = (t.localPosition - transform.position).normalized;
-                break;
-            case SpawnConfiguration.MovementDirection.Random:
-                //如果枚举字段代表随机方向, 则运动方向随机设置
-                direction = Random.onUnitSphere;
-                break;
-            default:
-                //如果spawnConfig.movementDirection的值与任何case关键字后面的值都不相等, 则速度方向为transform.forward
-                direction = transform.forward;
-                break;
+        //获取本次形状生成时随机得到的角速度值
+        float angularSpeed = spawnConfig.angularSpeed.RandomValueInRange;
+        //只有角速度值不为0时才有必要添加旋转行为组件
+        if (angularSpeed != 0f) {
+            //AddComponent<脚本类名>()方法会为指定的游戏对象添加指定类型的脚本组件, 并返回该脚本的实例            
+            //使用AddBehavior代替AddComponent
+            var rotation = shape.AddBehavior<RotationShapeBehavior>();
+            //shape.AngularVelocity = Random.onUnitSphere * spawnConfig.angularSpeed.RandomValueInRange;
+            //不再使用上面这句代码设置形状自身的角速度, 而是使用行为脚本的角速度控制旋转
+            rotation.AngularVelocity = Random.onUnitSphere * angularSpeed;
         }
-        //为形状添加移动行为脚本组件
-        var movement = shape.gameObject.AddComponent<MovementShapeBehavior>();
-        //shape.Velocity = direction * spawnConfig.speed.RandomValueInRange;
-        //不再使用上面这句代码设置形状自身的移动速度, 而是使用行为脚本的移动速度控制移动
-        movement.Velocity = direction * spawnConfig.speed.RandomValueInRange;
+
+        //获取本次形状生成时随机得到的移动速度值
+        float speed = spawnConfig.speed.RandomValueInRange;
+        //只有移动速度不为0时才有必要添加移动行为组件
+        if (speed != 0f) {            
+            //为形状添加移动行为脚本组件            
+            //使用AddBehavior代替AddComponent
+            var movement = shape.AddBehavior<MovementShapeBehavior>();
+            //通过GetDirectionVector方法获得运动方向
+            movement.Velocity = GetDirectionVector(spawnConfig.movementDirection, t) * speed;
+        }
+        //对当前产生的形状配置震荡行为
+        SetupOscillation(shape);
         //返回新生成的形状
         return shape;
+    }
+
+    /// <summary>
+    /// 该方法专门用来将MovementDirection类型的枚举值转换为与形状本地坐标系有关的一个向量
+    /// </summary>
+    /// <param name="direction">代表生成区的枚举配置</param>
+    /// <param name="t">代表目标形状</param>
+    /// <returns>与枚举值对应的</returns>
+    Vector3 GetDirectionVector(SpawnConfiguration.MovementDirection direction, Transform t)
+    {
+        switch (direction) {
+            case SpawnConfiguration.MovementDirection.Upward:
+                return transform.up;
+            case SpawnConfiguration.MovementDirection.Outward:
+                return (t.localPosition - transform.position).normalized;
+            case SpawnConfiguration.MovementDirection.Random:
+                return Random.onUnitSphere;
+            default:
+                return transform.forward;
+        }
+    }
+
+    //专门为指定形状配置震荡行为的方法
+    void SetupOscillation(Shape shape)
+    {
+        //根据配置随机计算震荡幅度
+        float amplitude = spawnConfig.oscillationAmplitude.RandomValueInRange;
+        //根据配置随机计算震荡频率
+        float frequency = spawnConfig.oscillationFrequency.RandomValueInRange;
+        //幅度与频率只要有一个为0, 震荡行为便不能正常配置, 终止方法
+        if (amplitude == 0f || frequency == 0f) {
+            return;
+        }
+        //在形状的行为列表中增加一个震荡行为
+        var oscillation = shape.AddBehavior<OscillationShapeBehavior>();
+        //为增加的震荡行为配置方向与幅度, 一行太长了, 分行写方便阅读
+        oscillation.Offset = GetDirectionVector(
+            spawnConfig.oscillationDirection,
+            shape.transform) * amplitude;
+        //为增加的震荡行为配置频率
+        oscillation.Frequency = frequency;
     }
 }

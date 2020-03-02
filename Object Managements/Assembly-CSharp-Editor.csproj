@@ -65,37 +65,37 @@
     <Compile Include="Assets\Scenes\7 Configuring Shapes\Editor\FloatRangeDrawer.cs" />
     <Compile Include="Assets\Scenes\7 Configuring Shapes\Editor\FloatRangeSliderDrawer.cs" />
     <Reference Include="UnityEditor.TestRunner">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TestRunner">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>F:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -293,7 +293,7 @@
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/Object Managements/Library/PackageCache/com.unity.ext.nunit@1.0.0/net35/unity-custom/nunit.framework.dll</HintPath>
+      <HintPath>G:/U3d/C#andShaderTutorialByJasperFlick/C-andShaderTutorialByJasperFlick/Object Managements/Library/PackageCache/com.unity.ext.nunit@1.0.0/net35/unity-custom/nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>F:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

@@ -2,31 +2,58 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+static class StaticGenericClassTest<T> {
+
+    public static string info = "泛型静态类字符串";
+
+    static StaticGenericClassTest()
+    {
+        Debug.Log(typeof(T));
+        Debug.Log("泛型静态构造被调用了");
+    }
+}
+
+static class StaticClassTest {
+
+    public static string info = "静态类字符串";
+
+    static StaticClassTest()
+    {
+        Debug.Log("静态构造被调用了");
+    }
+}
+
+class StaticMemberTest {
+    static int x;
+    static StaticMemberTest()
+    {
+        Debug.Log("static StaticMemberTest()被调用了");
+    }    
+}
+
+class ChildStaticMemberTest : StaticMemberTest {
+
+}
+
 public class Test : MonoBehaviour{
-    public TestScriptableObject ts;
+    private void Start()
+    {
+    }
+
+    void TestDebug()
+    {
+        Debug.Log(StaticGenericClassTest<Vector3>.info);
+        Debug.Log(StaticGenericClassTest<Vector2>.info);
+        Debug.Log(StaticGenericClassTest<Vector3>.info);
+        Debug.Log(StaticGenericClassTest<Vector2>.info);
+        Debug.Log(StaticClassTest.info);
+        Debug.Log(StaticClassTest.info);
+    }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F1)) {
-            ts.S = "我被搞了";
-            ts.SS = "我也被搞了";
-            ts.KKB = "变了变了";
+            TestDebug();
         }
-        else if (Input.GetKeyDown(KeyCode.F2)) {
-            Debug.Log(ts.S);
-            Debug.Log(ts.SS);
-            Debug.Log(ts.KKB);
-        }
-    }
-
-
-    private void OnBecameVisible()
-    {
-        Debug.Log("我出去了 嘻嘻 我又进来了 你打我啊笨蛋!");
-    }
-
-    private void OnBecameInvisible()
-    {
-        Debug.Log("我又出去了嘻嘻");
     }
 }

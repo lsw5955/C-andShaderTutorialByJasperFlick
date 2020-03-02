@@ -4,7 +4,6 @@ using UnityEngine;
 
 [CreateAssetMenu]
 public class TestScriptableObject : ScriptableObject {
-    [System.NonSerialized]
     string s = "我诞生了";
     public string ss = "我SS也诞生了";
     public string kkb = "我倒是要看看有没有变化";
